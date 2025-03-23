@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>Горячая замена кода в Python</title>
+
+		<link rel="stylesheet" href="dist/reset.css">
+		<link rel="stylesheet" href="dist/reveal.css">
+		<link rel="stylesheet" href="dist/theme/dracula.css">
+
+		<!-- Theme used for syntax highlighted code -->
+		<link rel="stylesheet" href="plugin/highlight/monokai.css">
+
+                <style>
+                  body, .reveal, section {
+                  background-color: rgb(181, 83, 60);
+                  font-family: sans-serif;
+                  }
+
+                  h1, h2, h3 {
+                      font-family: sans-serif !important;
+                      color: white !important;
+                      text-shadow: 2px 4px 0px black !important;
+                  }
+                </style>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+			  <section>
+                            <h2>Горячая замена кода в Python</h2>
+                            <hr>
+                            <p style="align">ITGM 17</p>
+                          </section>
+
+
+			  <section>
+                            <h2>Антон Безруков</h2>
+                            <b>hello@antonbezrukov.ru</b>
+                            <p>github: darkmou5e</p>
+                          </section>
+
+
+			  <section>
+                            <h2>Hot Reload</h2>
+                            <p>Tехнология, позволяющая обновлять код приложения "на лету", без необходимости его перезапуска.</p>
+                          </section>
+
+
+			  <section>
+                            <ul>
+                              <p>Ускорение разработки</p>
+                              <p class="fragment">Интерактивность</p>
+                              <p class="fragment">
+                                <strike>Минимизация downtime в production</strike>
+                              </p>
+                            </ul>
+                          </section>
+
+
+                          <section>
+                            <h3>Примеры использования</h3>
+                            <hr>
+                            Веб-разработка, игры, long-running процессы (например, боты).
+                          </section>
+
+			  <section>
+                            <h3>Как Python работает с модулями</h3>
+                            <hr>
+                            <ul>
+                              <p>Процесс импорта модулей</p>
+                              <p>Кэширование в sys.modules</p>
+                              <p>Проблемы при перезагрузке модулей</p>
+                            </ul>
+                          </section>
+
+
+                          <section>
+                            <h3>import выполняет шаги:</h3>
+                            <ol>
+                              <li>Поиск модуля в директориях из sys.path</li>
+                              <li class="fragment">Компиляция в байт-код (.pyc)</li>
+                              <li class="fragment">Выполнение</li>
+                              <li class="fragment">Кэширование модуля в sys.modules</li>
+                            </ol>
+                          </section>
+
+
+                          <section>
+                            <h3>Что произойдет, если выполнить import повторно?</h3>
+                            <hr>
+                            <p class="fragment">ничего не произойдет — Python просто вернет кэшированную версию</p>
+                          </section>
+
+
+
+			  <section>
+                            <h3>Перезагрузка модулей</h3>
+                            <hr>
+                              <p>Функция importlib.reload</p>
+                              <pre><code class="hljs python" data-line-numbers="|2|4|6">import importlib
+import my_module  # Импортируем модуль
+
+# Вносим изменения в my_module.py
+
+importlib.reload(my_module)  # Перезагружаем модуль
+                                </code>
+                                </pre>
+                              <p class="fragment"><b>Есть подводные камни</b></p>
+                          </section>
+
+			  <section>
+                            <h3>Транзитивные зависимости</h3>
+                            <hr>
+                            <pre><code class="hljs python" data-line-numbers="1-3|5-9|11-16|18|20|21|20-21|23"
+># module_a.py
+def hello_from_a():
+    return "hello from A!"
+
+# module_b.py
+import module_a
+
+def hello_from_b():
+    return module_a.hello_from_a() + " and hello from B!"
+
+# my_app.py
+import importlib
+import sys
+import module_b
+
+print(module_b.hello_from_b())
+
+# Вносим изменения в module_a.py
+
+importlib.reload(module_a)  # Перезагружаем модуль A
+importlib.reload(sys.modules['module_a'])  # Перезагружаем модуль B
+
+print(module_b.hello_from_b())
+                                </code>
+                                </pre>
+                          </section>
+
+
+			  <section>
+                            <h3>Проблемы и ограничения</h3>
+                            <hr>
+                            <ul>
+                              <p class="fragment">Побочные эффекты перезагрузки</p>
+                              <p class="fragment">Циклические зависимости</p>
+                              <p class="fragment">Динамический код и exec</p>
+                            </ul>
+                          </section>
+
+			  <section>
+                            <h3>И еще...</h3>
+                            <ul>
+                              <p>ООП с Hot Reload - это сложно</p>
+                              <p class="fragment">ФП с Hot Reload - это <strike>просто</strike> понятно</p>
+                              <p class="fragment"><b>Switch point - это модуль</b></p>
+                            </ul>
+                          </section>
+
+			  <section>
+                            <h3>Полезные инструменты</h3>
+                            <ul>
+                              <p class="fragment"><b>Watchdog</b>: отслеживание изменений</p>
+                              <p class="fragment"><b>Модуль ast</b>: анализ и модификация кода</p>
+                              <p class="fragment"><b>Hupper</b>: простое решение для Hot Reload</p>
+                            </ul>
+                          </section>
+
+			  <section>
+                            <h3>Watchdog</h3>
+                            <pre><code class="hljs python" data-line-numbers="1-4|6-10|12-21"
+>from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
+import importlib
+import my_module
+
+class ReloadHandler(FileSystemEventHandler):
+    def on_modified(self, event):
+        if event.src_path.endswith(".py"):
+            print("Reloading module...")
+            importlib.reload(my_module)
+
+observer = Observer()
+observer.schedule(ReloadHandler(), path=".", recursive=True)
+observer.start()
+
+try:
+    while True:
+        pass
+except KeyboardInterrupt:
+    observer.stop()
+observer.join()
+                                </code>
+                                </pre>
+                          </section>
+
+
+			  <section>
+                            <h3>AST</h3>
+                            <pre><code class="hljs python" data-line-numbers="1-6|8-11|13-15"
+>import ast
+
+code = """
+def greet():
+    return "Hello, World!"
+"""
+
+tree = ast.parse(code)
+for node in ast.walk(tree):
+    if isinstance(node, ast.FunctionDef) and node.name == "greet":
+        node.body[0].value.s = "Hello, AST!"
+
+modified_code = compile(tree, "<string>", "exec")
+exec(modified_code)
+print(greet())  # Вывод: "Hello, AST!"
+                                </code>
+                                </pre>
+                          </section>
+
+			  <section>
+<p>https://github.com/darkmou5e/hot_reloader</p>
+<img src="./hot_reloader_qrcode.png">
+                          </section>
+
+
+                          <section>
+                            <h3>Бонусная секция</h3>
+                            <h3>Monkey Patching</h3>
+                            <pre><code class="hljs python" data-line-numbers="1-4|6-10|12|14"
+># Исходный модуль
+# my_module.py
+def greet():
+    return "Hello, World!"
+
+# Monkey Patching
+import my_module
+
+def new_greet():
+    return "Hello, from patched function!"
+
+my_module.greet = new_greet  # Заменяем функцию
+
+print(my_module.greet())  # Вывод: "Hello, from patched function!"
+                                </code>
+                                </pre>
+                          </section>
+
+
+                          <section>
+                            <pre><code class="hljs python" data-line-numbers="1|3-8|10,11"
+>import requests
+
+# Оригинальная функция с проблемой
+def patched_get(url, **kwargs):
+    response = requests.get(url, **kwargs)
+    if response.status_code == 404:
+        raise ValueError("Resource not found")
+    return response
+
+# Применяем Monkey Patching
+requests.get = patched_get
+                                </code>
+                                </pre>
+                          </section>
+
+
+
+                          <section>
+                            <h3>Вопросы и ответы</h3>
+                          </section>
+
+
+                          <section>
+                            QR-code для слайдов
+                          </section>
+
+			</div>
+		</div>
+
+		<script src="dist/reveal.js"></script>
+		<script src="plugin/notes/notes.js"></script>
+		<script src="plugin/markdown/markdown.js"></script>
+		<script src="plugin/highlight/highlight.js"></script>
+		<script>
+			// More info about initialization & config:
+			// - https://revealjs.com/initialization/
+			// - https://revealjs.com/config/
+			Reveal.initialize({
+				hash: true,
+
+				// Learn about plugins: https://revealjs.com/plugins/
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+			});
+		</script>
+	</body>
+</html>
