@@ -134,8 +134,8 @@ print(module_b.hello_from_b())
 
 # Вносим изменения в module_a.py
 
-importlib.reload(module_a)  # Перезагружаем модуль A
-importlib.reload(sys.modules['module_a'])  # Перезагружаем модуль B
+importlib.reload(sys.modules['module_a'])  # Перезагружаем модуль A
+importlib.reload(module_b)  # Перезагружаем модуль B
 
 print(module_b.hello_from_b())
                                 </code>
