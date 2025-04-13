@@ -173,7 +173,7 @@ print(module_b.hello_from_b())
 
 			  <section>
                             <h3>Watchdog</h3>
-                            <pre><code class="hljs python" data-line-numbers="1-5|7-11|13-22"
+                            <pre><code class="hljs python" data-line-numbers="1-5|7-10|12-22"
 >from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 import time
@@ -184,7 +184,6 @@ class ReloadHandler(FileSystemEventHandler):
     def on_modified(self, event):
         if event.src_path.endswith(".py"):
             print("Reloading module...")
-            importlib.reload(my_module)
 
 observer = Observer()
 observer.schedule(ReloadHandler(), path=".", recursive=True)
